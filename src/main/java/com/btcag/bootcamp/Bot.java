@@ -1,16 +1,13 @@
 package com.btcag.bootcamp;
 
 public class Bot {
-    String name;
-    int health;
-    int attackDamage;
-    int attackRange;
-    int movementRate;
+    private String name;
+    private int health;
+    private int attackDamage;
+    private int attackRange;
+    private int movementRate;
 
-
-    public Bot(){
-
-    }
+    public Bot() {}
 
     public Bot(String name, int health, int attackDamage, int attackRange, int movementRate) {
         this.name = name;

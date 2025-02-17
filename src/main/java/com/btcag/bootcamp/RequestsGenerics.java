@@ -1,19 +1,39 @@
 package com.btcag.bootcamp;
 
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
 public class RequestsGenerics<T> {
 
-    private List<T> bots = new ArrayList<T>();
+    private List<T> items = new ArrayList<>();
 
-    public void createABot(T bot){
-        bots.add(bot);
+    public void createItem(T item) {
+        items.add(item);
     }
 
-    public List<T> getBots(){
-        return bots;
+    public List<T> getItems() {
+        return items;
     }
 
+    public T getItem(int index) {
+        if (index >= 0 && index < items.size()) {
+            return items.get(index);
+        } else {
+            return null; // return null if not found
+        }
+    }
+
+    public void removeItem(T item) {
+        items.remove(item);
+    }
+
+    public void removeItem(int index) {
+        if (index >= 0 && index < items.size()) {
+            items.remove(index);
+        }
+    }
+
+    public int getSize() {
+        return items.size();
+    }
 }
