@@ -1,6 +1,15 @@
 package com.btcag.bootcamp;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Bot {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String name;
     private int health;
     private int attackDamage;
@@ -15,6 +24,14 @@ public class Bot {
         this.attackDamage = attackDamage;
         this.attackRange = attackRange;
         this.movementRate = movementRate;
+    }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     public String getName() {

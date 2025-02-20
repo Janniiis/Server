@@ -19,7 +19,7 @@ public class RequestsGenerics<T> {
         if (index >= 0 && index < items.size()) {
             return items.get(index);
         } else {
-            return null; // return null if not found
+            return null;
         }
     }
 
