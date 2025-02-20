@@ -1,24 +1,32 @@
 package com.btcag.bootcamp;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.math.BigDecimal;
 
 @Entity
+@Table(name = "Robots")
 public class Bot {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID",strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", unique = true, nullable = false)
+    private String id;
+    @Column(name = "name", nullable = false)
     private String name;
-    private int health;
-    private int attackDamage;
-    private int attackRange;
-    private int movementRate;
+    @Column(name = "health", nullable = false)
+    private BigDecimal health;
+    @Column(name = "attackDamage", nullable = false)
+    private BigDecimal attackDamage;
+    @Column(name = "attackRange", nullable = false)
+    private BigDecimal attackRange;
+    @Column(name = "movementRate", nullable = false)
+    private BigDecimal movementRate;
 
     public Bot() {}
 
-    public Bot(String name, int health, int attackDamage, int attackRange, int movementRate) {
+    public Bot(String name, BigDecimal health, BigDecimal attackDamage, BigDecimal attackRange, BigDecimal movementRate) {
         this.name = name;
         this.health = health;
         this.attackDamage = attackDamage;
@@ -26,11 +34,11 @@ public class Bot {
         this.movementRate = movementRate;
     }
 
-    public int getId(){
+    public String getId(){
         return id;
     }
 
-    public void setId(int id){
+    public void setId(String id){
         this.id = id;
     }
 
@@ -42,35 +50,35 @@ public class Bot {
         this.name = name;
     }
 
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
+    public void setHealth(BigDecimal health) {
         this.health = health;
     }
 
-    public int getAttackDamage() {
+    public BigDecimal getHealth() {
+        return health;
+    }
+
+    public BigDecimal getAttackDamage() {
         return attackDamage;
     }
 
-    public void setAttackDamage(int attackDamage) {
+    public void setAttackDamage(BigDecimal attackDamage) {
         this.attackDamage = attackDamage;
     }
 
-    public int getAttackRange() {
+    public BigDecimal getAttackRange() {
         return attackRange;
     }
 
-    public void setAttackRange(int attackRange) {
+    public void setAttackRange(BigDecimal attackRange) {
         this.attackRange = attackRange;
     }
 
-    public int getMovementRate() {
+    public BigDecimal getMovementRate() {
         return movementRate;
     }
 
-    public void setMovementRate(int movementRate) {
+    public void setMovementRate(BigDecimal movementRate) {
         this.movementRate = movementRate;
     }
 }

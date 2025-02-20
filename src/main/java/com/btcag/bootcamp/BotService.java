@@ -1,71 +1,86 @@
 package com.btcag.bootcamp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.*;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 @RestController
 @RequestMapping("/robot")
 public class BotService {
 
-    @Autowired
-    private BotRepository botRepository;
-
-    // Alle Roboter
-    @GetMapping
-    public List<Bot> getBots() {
-        return botRepository.findAll();
-    }
-
-    // 1x Roboter
-    @GetMapping("/{name}")
-    public ResponseEntity<Bot> getBot(@PathVariable("name") String name) {
-        Optional<Bot> bot = botRepository.findByName(name);
-        return bot.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
     // Bot erstellen
-    @PostMapping
+    @PostMapping(value = "robot/create",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Bot> createBot(@RequestBody Bot newBot) {
-        // Überprüfen, ob ein Bot mit dem gleichen Namen schon existiert
-        Optional<Bot> existingBot = botRepository.findByName(newBot.getName());
-        if (existingBot.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409 Conflict, Bot existiert bereits
+        Bot bot = new Bot();
+        Session newSession = Connection.getSession().openSession();
+        newSession.beginTransaction();
+        newSession.save(newBot);
+        newSession.getTransaction().commit();
+        newSession.close();
+        return null;
+    }
+
+    @PostMapping()
+    public static void createRobot() throws IOException {
+        Bot newBot = getStatsForBot();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(newBot);
+
+
+        URL url = new URL("http://localhost:8080/create");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/json");
+
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] input = json.getBytes("utf-8");
+            os.write(input, 0, input.length);
         }
-        botRepository.save(newBot);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newBot); // 201 Created, Bot erfolgreich erstellt
+
+        int statusCode = connection.getResponseCode();
+        System.out.println("Response Code: " + statusCode);
     }
 
     // Bot löschen
     @DeleteMapping("/{name}/delete")
     public ResponseEntity<String> deleteBot(@PathVariable("name") String name) {
-        Optional<Bot> botToRemove = botRepository.findByName(name);
-        if (botToRemove.isPresent()) {
-            botRepository.delete(botToRemove.get());
-            return ResponseEntity.ok("Bot " + name + " removed.");
-        }
         return ResponseEntity.status(404).body("Bot not found.");
     }
 
     // Namen aktualisieren
     @PutMapping("/{name}/update")
     public ResponseEntity<Bot> updateBot(@PathVariable("name") String name, @RequestBody Bot newBot) {
-        Optional<Bot> botToUpdate = botRepository.findByName(name);
-        if (botToUpdate.isPresent()) {
-            Bot bot = botToUpdate.get();
-            bot.setName(newBot.getName());
-            bot.setHealth(newBot.getHealth());
-            bot.setAttackDamage(newBot.getAttackDamage());
-            bot.setAttackRange(newBot.getAttackRange());
-            bot.setMovementRate(newBot.getMovementRate());
-            botRepository.save(bot);
-            return ResponseEntity.ok(bot);
-        }
         return ResponseEntity.status(404).body(null);
+    }
+
+    public static Bot getStatsForBot(){
+        Scanner input = new Scanner(System.in);
+        Bot newRobot = new Bot();
+        System.out.println("Name: ");
+        newRobot.setName(input.nextLine());
+        System.out.println("AD: ");
+        newRobot.setAttackDamage(input.nextBigDecimal());
+        System.out.println("HP: ");
+        newRobot.setHealth(input.nextBigDecimal());
+        System.out.println("MovementRate: ");
+        newRobot.setMovementRate(input.nextBigDecimal());
+        System.out.println("Range: ");
+        newRobot.setAttackRange(input.nextBigDecimal());
+
+        return newRobot;
     }
 }

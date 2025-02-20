@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:sqlite:classpath:sqlite.db
+    url: jdbc:sqlite:src/main/resources/sqlite.db
     username: ""
     password: ""
   jpa:
