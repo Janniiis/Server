@@ -33,38 +33,10 @@ public class BotService {
         return null;
     }
 
-    @PostMapping()
-    public static void createRobot() throws IOException {
-        Bot newBot = getStatsForBot();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(newBot);
-
-
-        URL url = new URL("http://localhost:8080/create");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.setRequestProperty("Content-Type", "application/json");
-
-        try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = json.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        int statusCode = connection.getResponseCode();
-        System.out.println("Response Code: " + statusCode);
-    }
-
     // Bot löschen
     @DeleteMapping("/{name}/delete")
     public ResponseEntity<String> deleteBot(@PathVariable("name") String name) {
         return ResponseEntity.status(404).body("Bot not found.");
-    }
-
-    // Namen aktualisieren
-    @PutMapping("/{name}/update")
-    public ResponseEntity<Bot> updateBot(@PathVariable("name") String name, @RequestBody Bot newBot) {
-        return ResponseEntity.status(404).body(null);
     }
 
     public static Bot getStatsForBot(){
@@ -93,13 +65,13 @@ public class BotService {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Bot> getBot(@PathVariable("name") String name) {
+    public ResponseEntity<Bot> getBot(@PathVariable("id") String id) {
         Session session = Connection.getSession().openSession();
         Bot bot = null;
         try {
-            bot = session.get(Bot.class, name);
+            bot = session.get(Bot.class, id);
             if (bot == null) {
-                System.out.println("Bot not found: " + name);
+                System.out.println("Bot not found: " + id);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
         } catch (Exception e) {
