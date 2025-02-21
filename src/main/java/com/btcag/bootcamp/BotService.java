@@ -22,7 +22,7 @@ import java.util.Scanner;
 public class BotService {
 
     // Bot erstellen
-    @PostMapping(value = "robot/create",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Bot> createBot(@RequestBody Bot newBot) {
         Bot bot = new Bot();
         Session newSession = Connection.getSession().openSession();
@@ -82,5 +82,13 @@ public class BotService {
         newRobot.setAttackRange(input.nextBigDecimal());
 
         return newRobot;
+    }
+
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Bot>> getAllBots() {
+        Session session = Connection.getSession().openSession();
+        List<Bot> bots = session.createQuery("FROM Bot", Bot.class).list();
+        session.close();
+        return ResponseEntity.ok(bots);
     }
 }
