@@ -91,4 +91,24 @@ public class BotService {
         session.close();
         return ResponseEntity.ok(bots);
     }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Bot> getBot(@PathVariable("name") String name) {
+        Session session = Connection.getSession().openSession();
+        Bot bot = null;
+        try {
+            bot = session.get(Bot.class, name);
+            if (bot == null) {
+                System.out.println("Bot not found: " + name);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } finally {
+            session.close();
+        }
+        return ResponseEntity.ok(bot);
+    }
+
 }
